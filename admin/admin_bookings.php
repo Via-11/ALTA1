@@ -2,8 +2,6 @@
 include 'admin_header.php';
 include '../db.php';
 
-/* ================= FETCH STATISTICS ================= */
-
 // Total pending bookings
 $stmt = $pdo->query("
     SELECT COUNT(*) AS total_pending 
