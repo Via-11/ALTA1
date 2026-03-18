@@ -44,7 +44,7 @@ try {
        $upcoming_bookings = $stmt->fetchAll();
 
        $stmt = $pdo->prepare("
-        SELECT title, message, created_at
+        SELECT title, short_desc, created_at
         FROM announcements
         WHERE status = 'active'
         ORDER BY created_at DESC
@@ -501,7 +501,7 @@ try {
                                     <?= htmlspecialchars($news['title']) ?>
                                 </h4>
                                 <p class="dashboard-item-subtext dashboard-mb-2">
-                                    <?= htmlspecialchars(substr($news['message'],0,90)) ?>...
+                                    <?= htmlspecialchars(substr($news['short_desc'],0,90)) ?>...
                                 </p>
                                 <span class="dashboard-item-subtext dashboard-text-xs">
                                     Posted <?= date('M d, Y', strtotime($news['created_at'])) ?>
