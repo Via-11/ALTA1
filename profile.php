@@ -10,18 +10,30 @@ if (!isset($_SESSION['user_id'])) {
 
 $userId = $_SESSION['user_id'];
 
-// Handle Personal Info Update
-// Handle Personal Info Update
+function cleanUrl($url) {
+    $url = trim($url);
+    if ($url === '') {
+        return null;
+    }
+    if (!preg_match('/^http/', $url)) {
+        return 'https://' . $url;
+    }
+
+    return $url;
+}
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['update_personal_info'])) {
 
     $name = trim($_POST['name'] ?? '');
     $contact = trim($_POST['contact'] ?? '');
     $bio = trim($_POST['bio'] ?? '');
-    $github = trim($_POST['github'] ?? '');
-    $linkedin = trim($_POST['linkedin'] ?? '');
-    $facebook = trim($_POST['facebook'] ?? '');
-    $website = trim($_POST['website'] ?? '');
+    $github = cleanUrl($_POST['github'] ?? '');
+    $linkedin = cleanUrl($_POST['linkedin'] ?? '');
+    $facebook = cleanUrl($_POST['facebook'] ?? '');
+    $website = cleanUrl($_POST['website'] ?? '');
     $skills = trim($_POST['skills'] ?? '');
+    $address = trim($_POST['address'] ?? '');
+    $education = trim($_POST['education'] ?? '');
+    $experience = trim($_POST['experience'] ?? '');
     if (!empty($name) && !empty($contact)) {
         try {
 
@@ -80,7 +92,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['update_startup_detail
 
         $stmt = $pdo->prepare("
             UPDATE users 
-            SET startup_name = ?, 
+                SET startup_name = ?, 
                 industry = ?, 
                 startup_stage = ?, 
                 founded_year = ?, 
@@ -89,8 +101,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['update_startup_detail
                 target_market = ?, 
                 revenue_model = ?, 
                 funding_status = ?
-            WHERE user_id = ?
-        ");
+                WHERE user_id = ?
+                ");
 
         $stmt->execute([
             $startupName,
@@ -500,7 +512,7 @@ $activeTab = $_GET['tab'] ?? 'personal';
                 </div>
 
                 <div class="profile-edit-mode" id="profile-personal-edit" style="display: none;">
-                    <form method="POST" action="profile.php" class="profile-form">
+                    <form method="POST" action="profile.php?tab=<?= $activeTab ?>">
                         <div class="profile-form-grid">
                             <div class="profile-form-group">
                                 <label for="profile-name" class="profile-form-label">Full Name *</label>
@@ -605,294 +617,365 @@ $activeTab = $_GET['tab'] ?? 'personal';
         <!-- Startup Details Tab -->
         <?php if ($activeTab === 'startup'): ?>
             <div class="profile-tab-pane">
-                <div class="profile-info-grid">
+                <div class="profile-view-mode" id="profile-startup-view">
+                    <div class="profile-info-grid">
 
-                    <div class="profile-info-item">
-                        <label class="profile-info-label">Startup Name</label>
-                        <p class="profile-info-value"><?= htmlspecialchars($userStartupName) ?></p>
+                        <div class="profile-info-item">
+                            <label class="profile-info-label">Startup Name</label>
+                            <p class="profile-info-value"><?= htmlspecialchars($userStartupName) ?></p>
+                        </div>
+
+                        <div class="profile-info-item">
+                            <label class="profile-info-label">Industry</label>
+                            <p class="profile-info-value"><?= htmlspecialchars($userIndustry) ?></p>
+                        </div>
+
+                        <div class="profile-info-item">
+                            <label class="profile-info-label">Startup Stage</label>
+                            <p class="profile-info-value"><?= htmlspecialchars($userStartupStage) ?></p>
+                        </div>
+
+                        <div class="profile-info-item">
+                            <label class="profile-info-label">Founded</label>
+                            <p class="profile-info-value"><?= htmlspecialchars($userFoundedYear) ?></p>
+                        </div>
+
+                        <div class="profile-info-item">
+                            <label class="profile-info-label">Team Size</label>
+                            <p class="profile-info-value"><?= htmlspecialchars($userTeamSize) ?></p>
+                        </div>
+
+                        <div class="profile-info-item profile-info-item-full">
+                            <label class="profile-info-label">Description</label>
+                            <p class="profile-info-value"><?= htmlspecialchars($userStartupDescription) ?></p>
+                        </div>
+
+                        <div class="profile-info-item">
+                            <label class="profile-info-label">Target Market</label>
+                            <p class="profile-info-value"><?= htmlspecialchars($userTargetMarket) ?></p>
+                        </div>
+
+                        <div class="profile-info-item">
+                            <label class="profile-info-label">Revenue Model</label>
+                            <p class="profile-info-value"><?= htmlspecialchars($userRevenueModel) ?></p>
+                        </div>
+
+                        <div class="profile-info-item">
+                            <label class="profile-info-label">Funding Status</label>
+                            <p class="profile-info-value"><?= htmlspecialchars($userFundingStatus) ?></p>
+                        </div>
+
                     </div>
-
-                    <div class="profile-info-item">
-                        <label class="profile-info-label">Industry</label>
-                        <p class="profile-info-value"><?= htmlspecialchars($userIndustry) ?></p>
-                    </div>
-
-                    <div class="profile-info-item">
-                        <label class="profile-info-label">Startup Stage</label>
-                        <p class="profile-info-value"><?= htmlspecialchars($userStartupStage) ?></p>
-                    </div>
-
-                    <div class="profile-info-item">
-                        <label class="profile-info-label">Founded</label>
-                        <p class="profile-info-value"><?= htmlspecialchars($userFoundedYear) ?></p>
-                    </div>
-
-                    <div class="profile-info-item">
-                        <label class="profile-info-label">Team Size</label>
-                        <p class="profile-info-value"><?= htmlspecialchars($userTeamSize) ?></p>
-                    </div>
-
-                    <div class="profile-info-item profile-info-item-full">
-                        <label class="profile-info-label">Description</label>
-                        <p class="profile-info-value"><?= htmlspecialchars($userStartupDescription) ?></p>
-                    </div>
-
-                    <div class="profile-info-item">
-                        <label class="profile-info-label">Target Market</label>
-                        <p class="profile-info-value"><?= htmlspecialchars($userTargetMarket) ?></p>
-                    </div>
-
-                    <div class="profile-info-item">
-                        <label class="profile-info-label">Revenue Model</label>
-                        <p class="profile-info-value"><?= htmlspecialchars($userRevenueModel) ?></p>
-                    </div>
-
-                    <div class="profile-info-item">
-                        <label class="profile-info-label">Funding Status</label>
-                        <p class="profile-info-value"><?= htmlspecialchars($userFundingStatus) ?></p>
-                    </div>
-
                 </div>
 
                 <div class="profile-edit-mode" id="profile-startup-edit" style="display: none;">
-                    <form method="POST" action="profile.php" class="profile-form">
+                    <form method="POST" action="profile.php?tab=<?= $activeTab ?>">
                         <div class="profile-form-grid">
-                         <input type="text" name="startup_name" value="<?= htmlspecialchars($userStartupName) ?>">
-                         <input type="text" name="industry" value="<?= htmlspecialchars($userIndustry) ?>">
-                         <input type="text" name="startup_stage" value="<?= htmlspecialchars($userStartupStage) ?>">
-                         <input type="text" name="founded_year" value="<?= htmlspecialchars($userFoundedYear) ?>">
-                         <input type="text" name="team_size" value="<?= htmlspecialchars($userTeamSize) ?>">
 
-                         <textarea name="startup_description"><?= htmlspecialchars($userStartupDescription) ?></textarea>
+                            <div class="profile-form-group">
+                                <label class="profile-form-label">Startup Name</label>
+                                <input type="text" name="startup_name" class="profile-form-input"
+                                value="<?= htmlspecialchars($userStartupName) ?>">
+                            </div>
 
-                         <input type="text" name="target_market" value="<?= htmlspecialchars($userTargetMarket) ?>">
-                         <input type="text" name="revenue_model" value="<?= htmlspecialchars($userRevenueModel) ?>">
-                         <input type="text" name="funding_status" value="<?= htmlspecialchars($userFundingStatus) ?>">
+                            <div class="profile-form-group">
+                                <label class="profile-form-label">Industry</label>
+                                <input type="text" name="industry" class="profile-form-input"
+                                value="<?= htmlspecialchars($userIndustry) ?>">
+                            </div>
 
-                     </div>
-                     <div class="profile-form-actions">
-                        <button type="button" class="profile-btn profile-btn-outline" onclick="profileToggleEditMode()">
-                            Cancel
-                        </button>
-                        <button type="submit" name="update_startup_details" class="profile-btn profile-btn-primary">
-                            Save Changes
-                        </button>
-                    </div>
-                </form>
-            </div>
-        </div>
-    <?php endif; ?>
+                            <div class="profile-form-group">
+                                <label class="profile-form-label">Startup Stage</label>
+                                <select name="startup_stage" class="profile-form-select">
+                                    <option value="Idea" <?= $userStartupStage=='Idea'?'selected':'' ?>>Idea</option>
+                                    <option value="MVP" <?= $userStartupStage=='MVP'?'selected':'' ?>>MVP</option>
+                                    <option value="Growth" <?= $userStartupStage=='Growth'?'selected':'' ?>>Growth</option>
+                                </select>
+                            </div>
 
-    <!-- Documents Tab -->
-    <?php if ($activeTab === 'documents'): ?>
-        <div class="profile-tab-pane">
-            <div class="profile-documents-section">
-                <div class="profile-section-header">
-                    <h3>Upload Documents</h3>
-                    <p class="profile-section-description">Upload important documents (Max 5MB, PDF/JPG/PNG)</p>
+                            <div class="profile-form-group">
+                                <label class="profile-form-label">Funding Status</label>
+                                <select name="funding_status" class="profile-form-select">
+                                    <option value="Bootstrapped" <?= $userFundingStatus=='Bootstrapped'?'selected':'' ?>>Bootstrapped</option>
+                                    <option value="Seed" <?= $userFundingStatus=='Seed'?'selected':'' ?>>Seed</option>
+                                    <option value="Series A" <?= $userFundingStatus=='Series A'?'selected':'' ?>>Series A</option>
+                                </select>
+                            </div>
+
+                            <div class="profile-form-group">
+                                <label class="profile-form-label">Founded Year</label>
+                                <input type="text" name="founded_year" class="profile-form-input"
+                                value="<?= htmlspecialchars($userFoundedYear) ?>">
+                            </div>
+
+                            <div class="profile-form-group">
+                                <label class="profile-form-label">Team Size</label>
+                                <input type="text" name="team_size" class="profile-form-input"
+                                value="<?= htmlspecialchars($userTeamSize) ?>">
+                            </div>
+
+                            <div class="profile-form-group profile-form-group-full">
+                                <label class="profile-form-label">Description</label>
+                                <textarea name="startup_description" class="profile-form-textarea"><?= htmlspecialchars($userStartupDescription) ?></textarea>
+                            </div>
+
+                            <div class="profile-form-group">
+                                <label class="profile-form-label">Target Market</label>
+                                <input type="text" name="target_market" class="profile-form-input"
+                                value="<?= htmlspecialchars($userTargetMarket) ?>">
+                            </div>
+
+                            <div class="profile-form-group">
+                                <label class="profile-form-label">Revenue Model</label>
+                                <input type="text" name="revenue_model" class="profile-form-input"
+                                value="<?= htmlspecialchars($userRevenueModel) ?>">
+                            </div>
+
+
+
+                        </div>
+                        <div class="profile-form-actions">
+                            <button type="button" class="profile-btn profile-btn-outline" onclick="profileToggleEditMode()">
+                                Cancel
+                            </button>
+                            <button type="submit" name="update_startup_details" class="profile-btn profile-btn-primary">
+                                Save Changes
+                            </button>
+                        </div>
+                    </form>
                 </div>
+            </div>
+        <?php endif; ?>
 
-                <form method="POST" action="profile.php" enctype="multipart/form-data" class="profile-upload-form">
+        <!-- Documents Tab -->
+        <?php if ($activeTab === 'documents'): ?>
+            <div class="profile-tab-pane">
+                <div class="profile-documents-section">
+                    <div class="profile-section-header">
+                        <h3>Upload Documents</h3>
+                        <p class="profile-section-description">Upload important documents (Max 5MB, PDF/JPG/PNG)</p>
+                    </div>
+
+                    <form method="POST" action="profile.php" enctype="multipart/form-data" class="profile-upload-form">
+                        <div class="profile-form-grid">
+                            <div class="profile-form-group">
+                                <label for="profile-document-type" class="profile-form-label">Document Type *</label>
+                                <select id="profile-document-type" name="document_type" class="profile-form-select" required>
+                                    <option value="">Select type</option>
+                                    <option value="resume">Resume/CV</option>
+                                    <option value="id">ID Document</option>
+                                    <option value="certificate">Certificate</option>
+                                    <option value="business_plan">Business Plan</option>
+                                    <option value="pitch_deck">Pitch Deck</option>
+                                    <option value="other">Other</option>
+                                </select>
+                            </div>
+                            <div class="profile-form-group">
+                                <label for="profile-document" class="profile-form-label">Choose File *</label>
+                                <input type="file" id="profile-document" name="document" class="profile-form-file" 
+                                accept=".pdf,.jpg,.jpeg,.png" required>
+                            </div>
+                        </div>
+                        <div class="profile-form-actions">
+                            <button type="submit" name="upload_document" class="profile-btn profile-btn-primary">
+                                <svg class="profile-btn-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"></path>
+                                </svg>
+                                Upload Document
+                            </button>
+                        </div>
+                    </form>
+
+                    <div class="profile-documents-list">
+                        <h4>Uploaded Documents</h4>
+                        <?php if (count($documents) > 0): ?>
+                            <div class="profile-documents-grid">
+                                <?php foreach ($documents as $doc): ?>
+                                    <div class="profile-document-card">
+                                        <div class="profile-document-icon">
+                                            <svg fill="currentColor" viewBox="0 0 20 20">
+                                                <path d="M8 16.5a1 1 0 11-2 0 1 1 0 012 0zM15 7a2 2 0 11-4 0 2 2 0 014 0zM3 20a1 1 0 001 1h12a1 1 0 001-1V10a1 1 0 00-1-1H4a1 1 0 00-1 1v10z"></path>
+                                            </svg>
+                                        </div>
+                                        <div class="profile-document-info">
+                                            <h5 class="profile-document-name"><?= htmlspecialchars($doc['file_name']) ?></h5>
+                                            <p class="profile-document-type"><?= htmlspecialchars(ucfirst(str_replace('_', ' ', $doc['document_type']))) ?></p>
+                                            <p class="profile-document-date">
+                                                <?= date('M d, Y', strtotime($doc['uploaded_at'])) ?>
+                                            </p>
+                                        </div>
+                                        <div class="profile-document-actions">
+                                            <a href="<?= htmlspecialchars($doc['file_path']) ?>" target="_blank" class="profile-btn-icon-small" title="View">
+                                                <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
+                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path>
+                                                </svg>
+                                            </a>
+                                            <a href="<?= htmlspecialchars($doc['file_path']) ?>" download class="profile-btn-icon-small" title="Download">
+                                                <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"></path>
+                                                </svg>
+                                            </a>
+                                        </div>
+                                    </div>
+                                <?php endforeach; ?>
+                            </div>
+                        <?php else: ?>
+                            <div class="profile-empty-state">
+                                <svg class="profile-empty-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+                                </svg>
+                                <p>No documents uploaded yet</p>
+                            </div>
+                        <?php endif; ?>
+                    </div>
+                </div>
+            </div>
+        <?php endif; ?>
+
+        <!-- Settings Tab -->
+        <?php if ($activeTab === 'settings'): ?>
+            <div class="profile-tab-pane">
+                <form method="POST" action="profile.php?tab=<?= $activeTab ?>">
                     <div class="profile-form-grid">
-                        <div class="profile-form-group">
-                            <label for="profile-document-type" class="profile-form-label">Document Type *</label>
-                            <select id="profile-document-type" name="document_type" class="profile-form-select" required>
-                                <option value="">Select type</option>
-                                <option value="resume">Resume/CV</option>
-                                <option value="id">ID Document</option>
-                                <option value="certificate">Certificate</option>
-                                <option value="business_plan">Business Plan</option>
-                                <option value="pitch_deck">Pitch Deck</option>
-                                <option value="other">Other</option>
-                            </select>
+                        <div class="profile-form-group profile-form-group-full">
+                            <label for="profile-email" class="profile-form-label">Email Address *</label>
+                            <input type="email" id="profile-email" name="email" class="profile-form-input" 
+                            value="<?= htmlspecialchars($userEmail) ?>" required>
                         </div>
+
+                        <div class="profile-form-divider profile-form-group-full">
+                            <h4>Change Password</h4>
+                            <p class="profile-section-description">Leave blank if you don't want to change your password</p>
+                        </div>
+
+                        <div class="profile-form-group profile-form-group-full">
+                            <label for="profile-current-password" class="profile-form-label">Current Password</label>
+                            <div class="profile-password-wrapper">
+                                <input type="password" id="profile-current-password" name="current_password" 
+                                class="profile-form-input profile-password-input" 
+                                placeholder="Enter current password">
+                                <button type="button" class="profile-password-toggle" onclick="profileTogglePassword('profile-current-password')">
+                                    <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path>
+                                    </svg>
+                                </button>
+                            </div>
+                        </div>
+                        <div class="profile-form-group profile-form-group-full">
+
+                            <label>Email Notifications</label>
+
+                            <label>
+                                <input type="checkbox" name="notify_applications" checked>
+                                Receive updates about applications
+                            </label>
+
+                            <label>
+                                <input type="checkbox" name="notify_announcements" checked>
+                                Receive announcements and news
+                            </label>
+
+                            <label>
+                                <input type="checkbox" name="notify_weekly">
+                                Receive weekly digest
+                            </label>
+
+                        </div>
+                        <div class="profile-form-group profile-form-group-full">
+
+                            <label>Profile Visibility</label>
+
+                            <select name="visibility" class="profile-form-select">
+
+                                <option value="public">Public (Visible to incubatees)</option>
+                                <option value="private">Private (Only visible to admins)</option>
+
+                            </select>
+
+                        </div>
+
                         <div class="profile-form-group">
-                            <label for="profile-document" class="profile-form-label">Choose File *</label>
-                            <input type="file" id="profile-document" name="document" class="profile-form-file" 
-                            accept=".pdf,.jpg,.jpeg,.png" required>
+                            <label for="profile-new-password" class="profile-form-label">New Password</label>
+                            <div class="profile-password-wrapper">
+                                <input type="password" id="profile-new-password" name="new_password" 
+                                class="profile-form-input profile-password-input" 
+                                placeholder="Enter new password (min 8 characters)">
+                                <button type="button" class="profile-password-toggle" onclick="profileTogglePassword('profile-new-password')">
+                                    <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path>
+                                    </svg>
+                                </button>
+                            </div>
+                        </div>
+
+                        <div class="profile-form-group">
+                            <label for="profile-confirm-password" class="profile-form-label">Confirm New Password</label>
+                            <div class="profile-password-wrapper">
+                                <input type="password" id="profile-confirm-password" name="confirm_password" 
+                                class="profile-form-input profile-password-input" 
+                                placeholder="Confirm new password">
+                                <button type="button" class="profile-password-toggle" onclick="profileTogglePassword('profile-confirm-password')">
+                                    <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path>
+                                    </svg>
+                                </button>
+                            </div>
                         </div>
                     </div>
+
                     <div class="profile-form-actions">
-                        <button type="submit" name="upload_document" class="profile-btn profile-btn-primary">
+                        <button type="submit" name="update_settings" class="profile-btn profile-btn-primary">
                             <svg class="profile-btn-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"></path>
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7H5a2 2 0 00-2 2v9a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-3m-1 4l-3 3m0 0l-3-3m3 3V3"></path>
                             </svg>
-                            Upload Document
+                            Save Settings
                         </button>
                     </div>
                 </form>
 
-                <div class="profile-documents-list">
-                    <h4>Uploaded Documents</h4>
-                    <?php if (count($documents) > 0): ?>
-                        <div class="profile-documents-grid">
-                            <?php foreach ($documents as $doc): ?>
-                                <div class="profile-document-card">
-                                    <div class="profile-document-icon">
-                                        <svg fill="currentColor" viewBox="0 0 20 20">
-                                            <path d="M8 16.5a1 1 0 11-2 0 1 1 0 012 0zM15 7a2 2 0 11-4 0 2 2 0 014 0zM3 20a1 1 0 001 1h12a1 1 0 001-1V10a1 1 0 00-1-1H4a1 1 0 00-1 1v10z"></path>
-                                        </svg>
-                                    </div>
-                                    <div class="profile-document-info">
-                                        <h5 class="profile-document-name"><?= htmlspecialchars($doc['file_name']) ?></h5>
-                                        <p class="profile-document-type"><?= htmlspecialchars(ucfirst(str_replace('_', ' ', $doc['document_type']))) ?></p>
-                                        <p class="profile-document-date">
-                                            <?= date('M d, Y', strtotime($doc['uploaded_at'])) ?>
-                                        </p>
-                                    </div>
-                                    <div class="profile-document-actions">
-                                        <a href="<?= htmlspecialchars($doc['file_path']) ?>" target="_blank" class="profile-btn-icon-small" title="View">
-                                            <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
-                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path>
-                                            </svg>
-                                        </a>
-                                        <a href="<?= htmlspecialchars($doc['file_path']) ?>" download class="profile-btn-icon-small" title="Download">
-                                            <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"></path>
-                                            </svg>
-                                        </a>
-                                    </div>
-                                </div>
-                            <?php endforeach; ?>
-                        </div>
-                    <?php else: ?>
-                        <div class="profile-empty-state">
-                            <svg class="profile-empty-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
-                            </svg>
-                            <p>No documents uploaded yet</p>
-                        </div>
-                    <?php endif; ?>
-                </div>
-            </div>
-        </div>
-    <?php endif; ?>
-
-    <!-- Settings Tab -->
-    <?php if ($activeTab === 'settings'): ?>
-        <div class="profile-tab-pane">
-            <form method="POST" action="profile.php" class="profile-form">
-                <div class="profile-form-grid">
-                    <div class="profile-form-group profile-form-group-full">
-                        <label for="profile-email" class="profile-form-label">Email Address *</label>
-                        <input type="email" id="profile-email" name="email" class="profile-form-input" 
-                        value="<?= htmlspecialchars($userEmail) ?>" required>
-                    </div>
-
-                    <div class="profile-form-divider profile-form-group-full">
-                        <h4>Change Password</h4>
-                        <p class="profile-section-description">Leave blank if you don't want to change your password</p>
-                    </div>
-
-                    <div class="profile-form-group profile-form-group-full">
-                        <label for="profile-current-password" class="profile-form-label">Current Password</label>
-                        <div class="profile-password-wrapper">
-                            <input type="password" id="profile-current-password" name="current_password" 
-                            class="profile-form-input profile-password-input" 
-                            placeholder="Enter current password">
-                            <button type="button" class="profile-password-toggle" onclick="profileTogglePassword('profile-current-password')">
-                                <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path>
-                                </svg>
-                            </button>
-                        </div>
-                    </div>
-                    <div class="profile-form-group profile-form-group-full">
-
-                        <label>Email Notifications</label>
-
-                        <label>
-                            <input type="checkbox" name="notify_applications" checked>
-                            Receive updates about applications
-                        </label>
-
-                        <label>
-                            <input type="checkbox" name="notify_announcements" checked>
-                            Receive announcements and news
-                        </label>
-
-                        <label>
-                            <input type="checkbox" name="notify_weekly">
-                            Receive weekly digest
-                        </label>
-
-                    </div>
-                    <div class="profile-form-group profile-form-group-full">
-
-                        <label>Profile Visibility</label>
-
-                        <select name="visibility" class="profile-form-select">
-
-                            <option value="public">Public (Visible to incubatees)</option>
-                            <option value="private">Private (Only visible to admins)</option>
-
-                        </select>
-
-                    </div>
-
-                    <div class="profile-form-group">
-                        <label for="profile-new-password" class="profile-form-label">New Password</label>
-                        <div class="profile-password-wrapper">
-                            <input type="password" id="profile-new-password" name="new_password" 
-                            class="profile-form-input profile-password-input" 
-                            placeholder="Enter new password (min 8 characters)">
-                            <button type="button" class="profile-password-toggle" onclick="profileTogglePassword('profile-new-password')">
-                                <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path>
-                                </svg>
-                            </button>
-                        </div>
-                    </div>
-
-                    <div class="profile-form-group">
-                        <label for="profile-confirm-password" class="profile-form-label">Confirm New Password</label>
-                        <div class="profile-password-wrapper">
-                            <input type="password" id="profile-confirm-password" name="confirm_password" 
-                            class="profile-form-input profile-password-input" 
-                            placeholder="Confirm new password">
-                            <button type="button" class="profile-password-toggle" onclick="profileTogglePassword('profile-confirm-password')">
-                                <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path>
-                                </svg>
-                            </button>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="profile-form-actions">
-                    <button type="submit" name="update_settings" class="profile-btn profile-btn-primary">
+                <!-- Danger Zone -->
+                <div class="profile-danger-zone">
+                    <h4>Danger Zone</h4>
+                    <p class="profile-section-description">Once you log out, you'll need to log in again to access your account.</p>
+                    <a href="logout.php" class="profile-btn profile-btn-destructive">
                         <svg class="profile-btn-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7H5a2 2 0 00-2 2v9a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-3m-1 4l-3 3m0 0l-3-3m3 3V3"></path>
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"></path>
                         </svg>
-                        Save Settings
-                    </button>
+                        Logout
+                    </a>
                 </div>
-            </form>
-
-            <!-- Danger Zone -->
-            <div class="profile-danger-zone">
-                <h4>Danger Zone</h4>
-                <p class="profile-section-description">Once you log out, you'll need to log in again to access your account.</p>
-                <a href="logout.php" class="profile-btn profile-btn-destructive">
-                    <svg class="profile-btn-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"></path>
-                    </svg>
-                    Logout
-                </a>
             </div>
-        </div>
-    <?php endif; ?>
+        <?php endif; ?>
 
-</div>
+    </div>
 </main>
 
 <?php include 'footer.php'; ?>
 
 <script>
+    function profileSwitchTab(event, tabName) {
+    event.preventDefault(); // Prevent the browser from jumping
+    const allTabs = document.querySelectorAll('.profile-tab-pane');
+    allTabs.forEach(tab => tab.style.display = 'none');
+
+    const activeTabPane = document.getElementById('profile-' + tabName + '-view');
+    if(activeTabPane){
+        activeTabPane.style.display = 'block';
+    }
+
+    // Optional: highlight active tab link
+    document.querySelectorAll('.profile-tab-link').forEach(link => {
+        link.classList.remove('profile-tab-link-active');
+    });
+    event.currentTarget.classList.add('profile-tab-link-active');
+
+    // Update URL without scrolling
+    history.replaceState(null, '', '?tab=' + tabName);
+}
         // Get currently active tab
     function profileGetActiveTab() {
         const urlParams = new URLSearchParams(window.location.search);
@@ -900,29 +983,34 @@ $activeTab = $_GET['tab'] ?? 'personal';
     }
 
         // Toggle Edit Mode - Fixed to work with all tabs
-    function profileToggleEditMode() {
-        const activeTab = profileGetActiveTab();
-        const viewMode = document.getElementById('profile-' + activeTab + '-view');
-        const editMode = document.getElementById('profile-' + activeTab + '-edit');
+function profileToggleEditMode() {
+    const activeTab = profileGetActiveTab();
+    const viewMode = document.getElementById('profile-' + activeTab + '-view');
+    const editMode = document.getElementById('profile-' + activeTab + '-edit');
 
-        if (!viewMode || !editMode) {
-            console.error('View or edit mode element not found for tab: ' + activeTab);
-            return;
-        }
-
-        const isViewVisible = viewMode.style.display !== 'none';
-
-        if (isViewVisible) {
-                // Switch to edit mode
-            viewMode.style.display = 'none';
-            editMode.style.display = 'block';
-            window.scrollTo({ top: 0, behavior: 'smooth' });
-        } else {
-                // Switch back to view mode
-            viewMode.style.display = 'block';
-            editMode.style.display = 'none';
-        }
+    if (!viewMode || !editMode) {
+        console.error('View or edit mode element not found for tab: ' + activeTab);
+        return;
     }
+
+    const isViewVisible = viewMode.style.display !== 'none';
+
+    if (isViewVisible) {
+        // Switch to edit mode
+        viewMode.style.display = 'none';
+        editMode.style.display = 'block';
+
+        // Only scroll if edit pane is not fully visible
+        const rect = editMode.getBoundingClientRect();
+        if (rect.top < 0 || rect.bottom > window.innerHeight) {
+            editMode.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+        }
+    } else {
+        // Switch back to view mode
+        viewMode.style.display = 'block';
+        editMode.style.display = 'none';
+    }
+}
 
         // Toggle Password Visibility
     function profileTogglePassword(inputId) {
