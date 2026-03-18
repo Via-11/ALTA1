@@ -112,17 +112,17 @@ CREATE TABLE service_slots (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 DROP TABLE IF EXISTS announcements;
-CREATE TABLE announcements (
+CREATE TABLE announcements ( 
     id INT PRIMARY KEY AUTO_INCREMENT,
     title VARCHAR(255) NOT NULL,
     subtitle VARCHAR(255) NULL,
     short_desc TEXT NULL,
     highlights TEXT NULL,
-    message TEXT NOT NULL,
     status ENUM('active', 'inactive') DEFAULT 'active',
     type ENUM('latest','ongoing','upcoming') DEFAULT 'ongoing',
     image VARCHAR(500) NULL,
     event_date VARCHAR(100) NULL,
+    reg_deadline VARCHAR(100) NULL,
     location VARCHAR(255) NULL,
     button_text VARCHAR(100) DEFAULT 'Register Now',
     badge VARCHAR(100) NULL,
@@ -130,17 +130,17 @@ CREATE TABLE announcements (
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     INDEX idx_status (status)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
-ALTER TABLE announcements ADD COLUMN reg_deadline VARCHAR(255) DEFAULT NULL AFTER event_date;
+
 INSERT INTO announcements (
     title, 
     subtitle, 
     short_desc, 
     highlights, 
-    message, 
     status, 
     type, 
     image, 
     event_date, 
+    reg_deadline,
     location, 
     badge, 
     badge_priority, 
@@ -148,13 +148,13 @@ INSERT INTO announcements (
 ) VALUES (
     'INNOVATIONS WEEK 2026: "From Ideas to Impact"', 
     'Research Outputs with Innovation Impact and Commercialization', 
-    'Aligned to Digital Transformation and ICT', 
-    '3-day event celebrating UPHSD''s 50th Anniversary Showcase digital research outputs Pitching competition and innovation exhibits Networking with industry partners Registration deadline: February 20, 2026', 
-    'INNOVATIONS WEEK 2026: "From Ideas to Impact" is a premier event focusing on research and commercialization.', 
+    'A premier event focusing on research and commercialization, aligned to Digital Transformation and ICT',  
+    '3-day event celebrating UPHSD''s 50th Anniversary Showcase digital research outputs\nPitching competition and innovation exhibits\nNetworking with industry partners', 
     'active', 
     'latest', 
-    'uploads/announcements/ann_69a808ea7d05e6.72196763.jpg', 
+    'uploads/announcements/ann_69a7c945314756.28843029.jpg', 
     'April 6-8, 2026', 
+    'February 20, 2026',
     'UPHSD Las Piñas Campus', 
     'Happening Soon', 
     'Event', 

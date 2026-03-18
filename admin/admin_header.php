@@ -9,15 +9,14 @@ if (!isset($_SESSION['user_id']) || $_SESSION['user_role'] !== 'admin') {
     exit(); 
 }
 
-$stmt = $conn->prepare("SELECT message FROM announcements WHERE status = 'active' ORDER BY created_at DESC LIMIT 1");
+$stmt = $conn->prepare("SELECT title FROM announcements WHERE status = 'active' ORDER BY created_at DESC LIMIT 1");
 $stmt->execute();
 $result = $stmt->get_result();
 $announcementContent = null;
 
 if ($row = $result->fetch_assoc()) {
-    $announcementContent = $row['message'];
+    $announcementContent = $row['title']; 
 }
-
 ?>
 <!DOCTYPE html>
 <html lang="en">

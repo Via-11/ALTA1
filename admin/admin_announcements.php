@@ -20,7 +20,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     if (isset($_POST['add_announcement'])) {
 
         $title = trim($_POST['title'] ?? '');
-        $message = trim($_POST['message'] ?? '');
         $type = $_POST['type'] ?? 'ongoing';
 
         $subtitle = $_POST['subtitle'] ?? null;
@@ -67,20 +66,20 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             }
         }
 
-        if ($title && $message) {
+        if ($title) {
 
             if ($db instanceof PDO) {
 
                 $stmt = $db->prepare("
                     INSERT INTO announcements
-                    (title, subtitle, short_desc, message, highlights, type,
+                    (title, subtitle, short_desc, highlights, type,
                      badge, badge_priority, event_date, reg_deadline,
                      location, button_text, image, status, created_at)
                     VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 'active', NOW())
                 ");
 
                 $stmt->execute([
-                    $title, $subtitle, $short_desc, $message, $highlights,
+                    $title, $subtitle, $short_desc, $highlights,
                     $type, $badge, $badge_priority,
                     $event_date, $reg_deadline,
                     $location, $button_text,
@@ -91,7 +90,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
                 $stmt = $db->prepare("
                     INSERT INTO announcements
-                    (title, subtitle, short_desc, message, highlights, type,
+                    (title, subtitle, short_desc, highlights, type,
                      badge, badge_priority, event_date, reg_deadline,
                      location, button_text, image, status, created_at)
                     VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 'active', NOW())
@@ -99,7 +98,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
                 $stmt->bind_param(
                     "sssssssssssss",
-                    $title, $subtitle, $short_desc, $message, $highlights,
+                    $title, $subtitle, $short_desc, $highlights,
                     $type, $badge, $badge_priority,
                     $event_date, $reg_deadline,
                     $location, $button_text,
@@ -113,7 +112,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
         } else {
 
-            $_SESSION['error'] = "Title and message are required.";
+            $_SESSION['error'] = "Title is required.";
 
         }
     }
@@ -125,7 +124,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $id = intval($_POST['announcement_id']);
 
         $title = trim($_POST['title']);
-        $message = trim($_POST['message']);
 
         $subtitle = $_POST['subtitle'] ?? null;
         $short_desc = $_POST['short_desc'] ?? null;
@@ -173,7 +171,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
                 $stmt = $db->prepare("
                     UPDATE announcements SET
-                    title=?, subtitle=?, short_desc=?, message=?, highlights=?,
+                    title=?, subtitle=?, short_desc=?, highlights=?,
                     type=?, badge=?, badge_priority=?,
                     event_date=?, reg_deadline=?, location=?,
                     button_text=?, image=?
@@ -181,7 +179,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 ");
 
                 $stmt->execute([
-                    $title,$subtitle,$short_desc,$message,$highlights,
+                    $title,$subtitle,$short_desc,$highlights,
                     $type,$badge,$badge_priority,
                     $event_date,$reg_deadline,$location,
                     $button_text,$image_path,$id
@@ -191,7 +189,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
                 $stmt = $db->prepare("
                     UPDATE announcements SET
-                    title=?, subtitle=?, short_desc=?, message=?, highlights=?,
+                    title=?, subtitle=?, short_desc=?, highlights=?,
                     type=?, badge=?, badge_priority=?,
                     event_date=?, reg_deadline=?, location=?,
                     button_text=?
@@ -199,7 +197,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 ");
 
                 $stmt->execute([
-                    $title,$subtitle,$short_desc,$message,$highlights,
+                    $title,$subtitle,$short_desc,$highlights,
                     $type,$badge,$badge_priority,
                     $event_date,$reg_deadline,$location,
                     $button_text,$id
@@ -212,7 +210,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
                 $stmt = $db->prepare("
                     UPDATE announcements SET
-                    title=?, subtitle=?, short_desc=?, message=?, highlights=?,
+                    title=?, subtitle=?, short_desc=?, highlights=?,
                     type=?, badge=?, badge_priority=?,
                     event_date=?, reg_deadline=?, location=?,
                     button_text=?, image=?
@@ -221,7 +219,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
                 $stmt->bind_param(
                     "sssssssssssssi",
-                    $title,$subtitle,$short_desc,$message,$highlights,
+                    $title,$subtitle,$short_desc,$highlights,
                     $type,$badge,$badge_priority,
                     $event_date,$reg_deadline,$location,
                     $button_text,$image_path,$id
@@ -231,7 +229,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
                 $stmt = $db->prepare("
                     UPDATE announcements SET
-                    title=?, subtitle=?, short_desc=?, message=?, highlights=?,
+                    title=?, subtitle=?, short_desc=?, highlights=?,
                     type=?, badge=?, badge_priority=?,
                     event_date=?, reg_deadline=?, location=?,
                     button_text=?
@@ -240,7 +238,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
                 $stmt->bind_param(
                     "ssssssssssssi",
-                    $title,$subtitle,$short_desc,$message,$highlights,
+                    $title,$subtitle,$short_desc,$highlights,
                     $type,$badge,$badge_priority,
                     $event_date,$reg_deadline,$location,
                     $button_text,$id
@@ -397,7 +395,6 @@ if ($db instanceof PDO) {
                                     data-title="<?= htmlspecialchars($row['title']) ?>"
                                     data-subtitle="<?= htmlspecialchars($row['subtitle']) ?>"
                                     data-short="<?= htmlspecialchars($row['short_desc']) ?>"
-                                    data-message="<?= htmlspecialchars($row['message']) ?>"
                                     data-type="<?= $row['type'] ?>"
                                     data-date="<?= htmlspecialchars($row['event_date']) ?>"
                                     data-deadline="<?= htmlspecialchars($row['reg_deadline']) ?>"
@@ -452,11 +449,6 @@ if ($db instanceof PDO) {
                 <label>Short Description</label>
                 <input type="text" name="short_desc">
             </div>
-        </div>
-
-        <div class="form-group">
-            <label>Message (Main Content)</label>
-            <textarea name="message" rows="4" required></textarea>
         </div>
 
         <div class="form-group">
@@ -567,11 +559,6 @@ if ($db instanceof PDO) {
                 </div>
 
                 <div class="form-group full">
-                    <label for="edit_message">Message</label>
-                    <textarea name="message" id="edit_message" rows="4"></textarea>
-                </div>
-
-                <div class="form-group full">
                     <label for="edit_highlights">Highlights (Press ENTER for new bullet)</label>
                     <textarea 
                         name="highlights" 
@@ -645,7 +632,6 @@ if ($db instanceof PDO) {
                 document.getElementById("edit_title").value = this.dataset.title;
                 document.getElementById("edit_subtitle").value = this.dataset.subtitle;
                 document.getElementById("edit_short").value = this.dataset.short;
-                document.getElementById("edit_message").value = this.dataset.message;
                 document.getElementById("edit_type").value = this.dataset.type;
                 document.getElementById("edit_date").value = this.dataset.date;
                 document.getElementById("edit_deadline").value = this.dataset.deadline;
