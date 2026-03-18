@@ -1,0 +1,370 @@
+<?php
+session_start();
+include '../db.php';
+include 'admin_header.php';
+
+/* ================= AUTH CHECK ================= */
+if (!isset($_SESSION['user_id']) || $_SESSION['user_role'] !== 'admin') {
+    header("Location: login.php");
+    exit();
+}
+
+$adminId = $_SESSION['user_id'];
+
+/* ================= FETCH MESSAGES ================= */
+
+/* Unread */
+$stmtUnread = $conn->prepare("
+    SELECT m.*, u.name AS sender_name
+    FROM messages m
+    LEFT JOIN users u ON m.sender_id = u.user_id
+    WHERE m.receiver_id = ? AND m.status='unread'
+    ORDER BY m.created_at DESC
+");
+$stmtUnread->bind_param("i", $adminId);
+$stmtUnread->execute();
+$resultUnread = $stmtUnread->get_result();
+
+/* Read */
+$stmtRead = $conn->prepare("
+    SELECT m.*, u.name AS sender_name
+    FROM messages m
+    LEFT JOIN users u ON m.sender_id = u.user_id
+    WHERE m.receiver_id = ? AND m.status='read'
+    ORDER BY m.created_at DESC
+");
+$stmtRead->bind_param("i", $adminId);
+$stmtRead->execute();
+$resultRead = $stmtRead->get_result();
+
+/* Sent */
+$stmtSent = $conn->prepare("
+    SELECT m.*, u.name AS receiver_name
+    FROM messages m
+    LEFT JOIN users u ON m.receiver_id = u.user_id
+    WHERE m.sender_id = ?
+    ORDER BY m.created_at DESC
+");
+$stmtSent->bind_param("i", $adminId);
+$stmtSent->execute();
+$resultSent = $stmtSent->get_result();
+?>
+
+<link rel="stylesheet" href="../styles/dashboard.css">
+
+<div class="min-h-screen bg-background py-8 container">
+
+<div class="flex items-center justify-between mb-6">
+    <div>
+        <h1 class="text-4xl font-bold text-white mb-2">Admin Messages</h1>
+        <p class="text-gray-400">Manage and reply to messages from users</p>
+    </div>
+
+    <button class="btn btn-primary" onclick="dashboardOpenComposeModal()">
+        New Message
+    </button>
+</div>
+
+
+<!-- TABS -->
+<div class="flex gap-2 mb-6">
+    <button class="tab-btn active" data-tab="unreadTab">📩 Unread</button>
+    <button class="tab-btn" data-tab="readTab">✅ Read</button>
+    <button class="tab-btn" data-tab="sentTab">📤 Sent</button>
+</div>
+
+
+<div class="grid lg:grid-cols-3 gap-6">
+
+<!-- LEFT MESSAGE LIST -->
+<div class="lg:col-span-1">
+
+<!-- UNREAD -->
+<div id="unreadTab" class="tab-content">
+
+<div class="messages-card">
+<div class="messages-card-content p-4">
+<div class="space-y-2">
+
+<?php if($resultUnread->num_rows>0): ?>
+<?php while($msg=$resultUnread->fetch_assoc()): ?>
+
+<div class="messages-list-item unread"
+data-id="<?= $msg['id'] ?>"
+data-sender="<?= htmlspecialchars($msg['sender_name'] ?? 'User') ?>"
+data-subject="<?= htmlspecialchars($msg['subject'] ?? 'No Subject') ?>"
+data-message="<?= htmlspecialchars($msg['message']) ?>"
+data-date="<?= date("M d, Y h:i A", strtotime($msg['created_at'])) ?>">
+
+<div class="flex items-start gap-3">
+
+<div class="avatar">
+<?= strtoupper(substr($msg['sender_name'] ?? 'US',0,2)) ?>
+</div>
+
+<div class="flex-1">
+<span class="font-semibold text-white text-sm">
+<?= htmlspecialchars($msg['sender_name'] ?? 'User') ?>
+</span>
+
+<p class="text-sm text-white">
+<?= htmlspecialchars($msg['subject'] ?? 'No Subject') ?>
+</p>
+
+<p class="text-xs text-gray-500">
+<?= substr($msg['message'],0,50) ?>...
+</p>
+
+<span class="text-xs text-gray-500">
+<?= date("M d", strtotime($msg['created_at'])) ?>
+</span>
+</div>
+
+</div>
+</div>
+
+<?php endwhile; ?>
+<?php else: ?>
+<p class="text-gray-400">No unread messages</p>
+<?php endif; ?>
+
+</div>
+</div>
+</div>
+
+</div>
+
+
+<!-- READ -->
+<div id="readTab" class="tab-content" style="display:none;">
+
+<div class="messages-card">
+<div class="messages-card-content p-4">
+<div class="space-y-2">
+
+<?php if($resultRead->num_rows>0): ?>
+<?php while($msg=$resultRead->fetch_assoc()): ?>
+
+<div class="messages-list-item"
+data-id="<?= $msg['id'] ?>"
+data-sender="<?= htmlspecialchars($msg['sender_name'] ?? 'User') ?>"
+data-subject="<?= htmlspecialchars($msg['subject'] ?? 'No Subject') ?>"
+data-message="<?= htmlspecialchars($msg['message']) ?>"
+data-date="<?= date("M d, Y h:i A", strtotime($msg['created_at'])) ?>">
+
+<div class="flex items-start gap-3">
+
+<div class="avatar">
+<?= strtoupper(substr($msg['sender_name'] ?? 'US',0,2)) ?>
+</div>
+
+<div class="flex-1">
+
+<span class="font-semibold text-white text-sm">
+<?= htmlspecialchars($msg['sender_name'] ?? 'User') ?>
+</span>
+
+<p class="text-sm text-white">
+<?= htmlspecialchars($msg['subject'] ?? 'No Subject') ?>
+</p>
+
+<p class="text-xs text-gray-500">
+<?= substr($msg['message'],0,50) ?>...
+</p>
+
+<span class="text-xs text-gray-500">
+<?= date("M d", strtotime($msg['created_at'])) ?>
+</span>
+
+</div>
+</div>
+</div>
+
+<?php endwhile; ?>
+<?php else: ?>
+<p class="text-gray-400">No read messages</p>
+<?php endif; ?>
+
+</div>
+</div>
+</div>
+
+</div>
+
+
+<!-- SENT -->
+<div id="sentTab" class="tab-content" style="display:none;">
+
+<div class="messages-card">
+<div class="messages-card-content p-4">
+<div class="space-y-2">
+
+<?php if($resultSent->num_rows>0): ?>
+<?php while($msg=$resultSent->fetch_assoc()): ?>
+
+<div class="messages-list-item"
+data-id="<?= $msg['id'] ?>"
+data-sender="<?= htmlspecialchars($msg['receiver_name'] ?? 'User') ?>"
+data-subject="<?= htmlspecialchars($msg['subject'] ?? 'No Subject') ?>"
+data-message="<?= htmlspecialchars($msg['message']) ?>"
+data-date="<?= date("M d, Y h:i A", strtotime($msg['created_at'])) ?>">
+
+<div class="flex items-start gap-3">
+
+<div class="avatar">
+<?= strtoupper(substr($msg['receiver_name'] ?? 'US',0,2)) ?>
+</div>
+
+<div class="flex-1">
+
+<span class="font-semibold text-white text-sm">
+<?= htmlspecialchars($msg['receiver_name'] ?? 'User') ?>
+</span>
+
+<p class="text-sm text-white">
+<?= htmlspecialchars($msg['subject'] ?? 'No Subject') ?>
+</p>
+
+<p class="text-xs text-gray-500">
+<?= substr($msg['message'],0,50) ?>...
+</p>
+
+<span class="text-xs text-gray-500">
+<?= date("M d", strtotime($msg['created_at'])) ?>
+</span>
+
+</div>
+</div>
+</div>
+
+<?php endwhile; ?>
+<?php else: ?>
+<p class="text-gray-400">No sent messages</p>
+<?php endif; ?>
+
+</div>
+</div>
+</div>
+
+</div>
+
+</div>
+
+
+<!-- MESSAGE DETAIL PANEL -->
+<div class="lg:col-span-2" id="message-detail" style="display:none;">
+
+<div class="messages-card">
+<div class="messages-card-content p-6">
+
+<h3 id="detail-sender" class="text-xl text-white mb-2"></h3>
+<p id="detail-date" class="text-sm text-gray-400 mb-4"></p>
+
+<h2 id="detail-subject" class="text-lg text-white mb-4"></h2>
+
+<p id="detail-message" class="text-gray-300 whitespace-pre-wrap"></p>
+
+<form id="reply-form" class="mt-6">
+
+<input type="hidden" id="message_id_input" name="message_id">
+
+<textarea name="reply_message"
+class="messages-form-textarea mb-3"
+rows="4"
+placeholder="Type reply..."
+required></textarea>
+
+<button class="btn btn-primary">Send Reply</button>
+
+</form>
+
+</div>
+</div>
+
+</div>
+
+
+</div>
+</div>
+
+
+<!-- COMPOSE MODAL -->
+<div id="compose-modal"
+style="display:none;position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,0.8);z-index:9999;align-items:center;justify-content:center;">
+
+<div class="messages-card" style="max-width:600px;width:90%;">
+<div class="messages-card-content p-8">
+
+<div class="flex justify-between mb-6">
+<h2 class="text-2xl text-white">Compose Message</h2>
+<button onclick="dashboardCloseComposeModal()">×</button>
+</div>
+
+<form method="POST" action="admin_send_messages.php">
+
+<input name="recipient" class="form-input mb-3" placeholder="Recipient Username" required>
+
+<input name="subject" class="form-input mb-3" placeholder="Subject" required>
+
+<textarea name="message" class="messages-form-textarea mb-4" rows="6" required></textarea>
+
+<button class="btn btn-primary">Send Message</button>
+
+</form>
+
+</div>
+</div>
+</div>
+
+
+<script>
+
+document.querySelectorAll('.tab-btn').forEach(btn=>{
+btn.addEventListener('click',()=>{
+const tab = btn.dataset.tab;
+
+document.querySelectorAll('.tab-content').forEach(t=>t.style.display='none');
+document.querySelectorAll('.tab-btn').forEach(b=>b.classList.remove('active'));
+
+document.getElementById(tab).style.display='block';
+btn.classList.add('active');
+});
+});
+
+
+const messageItems = document.querySelectorAll('.messages-list-item');
+const detailPanel = document.getElementById('message-detail');
+
+let currentMessageId = null;
+
+messageItems.forEach(item=>{
+
+item.addEventListener('click',()=>{
+
+currentMessageId = item.dataset.id;
+
+document.getElementById('message_id_input').value = currentMessageId;
+
+document.getElementById('detail-sender').textContent = item.dataset.sender;
+document.getElementById('detail-subject').textContent = item.dataset.subject;
+document.getElementById('detail-message').textContent = item.dataset.message;
+document.getElementById('detail-date').textContent = item.dataset.date;
+
+detailPanel.style.display='block';
+
+});
+
+});
+
+
+function dashboardOpenComposeModal(){
+document.getElementById('compose-modal').style.display='flex';
+}
+
+function dashboardCloseComposeModal(){
+document.getElementById('compose-modal').style.display='none';
+}
+
+</script>
+
+<?php include '../footer.php'; ?>

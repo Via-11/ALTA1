@@ -1,0 +1,60 @@
+/********** INDEX LIGHT ************/
+
+/* Hero Section */
+.hero {
+    background-image: linear-gradient(rgba(255,255,255,0.7), rgba(255,255,255,0.7)), 
+                      url('assets/indexphoto.jpg');
+    padding: 5rem 0 8rem;
+    position: relative;
+    overflow: hidden;
+    background-size: cover;
+}
+
+.hero h1 {
+    color: var(--foreground); /* dark text */
+}
+
+.hero p {
+    color: var(--muted-foreground); /* darker gray */
+}
+
+/* Stats Section */
+.stat-card {
+    background-color: #ffffff;
+    border: 1px solid var(--border);
+    color: var(--foreground);
+    box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+}
+
+.stat-value {
+    color: var(--secondary);
+}
+
+.stat-label {
+    color: var(--muted-foreground);
+}
+
+/* Cards */
+.index-card {
+    background: #ffffff;
+    border: 1px solid var(--border);
+    color: var(--foreground);
+    box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+}
+
+.service-title {
+    color: var(--foreground);
+}
+
+.service-description {
+    color: var(--muted-foreground);
+}
+
+/* CTA Section */
+.cta-container {
+    background: #f1f5f9;
+}
+
+.cta-section {
+    color: var(--foreground);
+}

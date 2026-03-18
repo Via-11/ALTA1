@@ -1,0 +1,972 @@
+:root {
+
+  /* ===== ADMIN CORE COLORS ===== */
+  --admin-background: #081c3a;
+  --admin-background-alt: #0b2a57;
+  --admin-foreground: #E6EEF8;
+
+  /* ===== ADMIN HEADER / ACCENT ===== */
+  --admin-gold: #C28B0A;
+  --admin-primary: #C28B0A;
+
+  --admin-glass-border: rgba(230, 238, 248, 0.08);
+
+  /* ===== ADMIN CARD ===== */
+  --admin-card-bg: rgba(255, 255, 255, 0.05);
+  --admin-shadow: 0 20px 40px rgba(0, 0, 0, 0.35);
+
+  /* ===== ADMIN UI COLORS ===== */
+  --admin-secondary: #d4a017;
+  --admin-secondary-dark: #a87f0d;
+  --admin-gold-glow: rgba(212, 160, 23, 0.20);
+
+  --admin-muted: #9fb3c8;
+  --admin-border: rgba(255, 255, 255, 0.10);
+
+  --admin-success: #10b981;
+  --admin-error: #ef4444;
+  --admin-danger: #ef4444;
+  --admin-info: #3b82f6;
+
+  /* ===== TYPOGRAPHY ===== */
+  --admin-font: 'Inter', -apple-system, sans-serif;
+
+  /* ===== ANIMATION ===== */
+  --admin-transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+
+/* ==============================
+   BODY
+================================ */
+
+body {
+    background-color: var(--admin-background);
+    color: var(--admin-foreground);
+    font-family: var(--admin-font);
+    line-height: 1.6;
+    margin: 0;
+}
+
+
+/* ==============================
+   DASHBOARD CONTAINER
+================================ */
+
+.admin-dashboard {
+    max-width: 1100px;
+    margin: 40px auto;
+    padding: 20px;
+}
+
+h1 {
+    color: var(--admin-gold);
+    font-size: 2.5rem;
+    margin-bottom: 30px;
+    text-align: center;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+}
+
+
+/* ==============================
+   GLASSMORPHISM CARDS
+================================ */
+
+.admin-card,
+.form-container {
+    background: var(--admin-card-bg);
+    backdrop-filter: blur(10px);
+    border: 1px solid var(--admin-glass-border);
+    border-radius: 16px;
+    padding: 25px;
+    margin-bottom: 30px;
+    box-shadow: var(--admin-shadow);
+}
+
+
+/* ==============================
+   FORMS
+================================ */
+
+.form-group {
+    margin-bottom: 15px;
+}
+
+label {
+    display: block;
+    color: var(--admin-muted);
+    margin-bottom: 5px;
+    font-weight: 500;
+}
+
+input,
+textarea,
+select {
+    width: 100%;
+    padding: 12px;
+    background: rgba(255, 255, 255, 0.06);
+    border: 1px solid var(--admin-border);
+    border-radius: 8px;
+    color: var(--admin-foreground);
+    transition: var(--admin-transition);
+}
+
+input:focus,
+textarea:focus,
+select:focus {
+    outline: none;
+    border-color: var(--admin-secondary);
+    background: rgba(255, 255, 255, 0.10);
+}
+
+
+/* ==============================
+   BUTTONS
+================================ */
+
+.btn-primary {
+    background: var(--admin-secondary);
+    color: #081c3a;
+    border: none;
+    padding: 12px 24px;
+    border-radius: 8px;
+    font-weight: 700;
+    cursor: pointer;
+    transition: var(--admin-transition);
+    text-transform: uppercase;
+}
+
+.btn-primary:hover {
+    background: var(--admin-secondary-dark);
+    transform: translateY(-2px);
+    box-shadow: 0 5px 15px var(--admin-gold-glow);
+}
+
+
+/* ==============================
+   TABLE MANAGEMENT
+================================ */
+
+.announcement-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 20px;
+}
+
+.announcement-table th {
+    text-align: left;
+    color: var(--admin-secondary);
+    border-bottom: 2px solid var(--admin-border);
+    padding: 15px;
+}
+
+.announcement-table td {
+    padding: 15px;
+    border-bottom: 1px solid var(--admin-border);
+}
+
+
+/* ==============================
+   STATUS BADGES
+================================ */
+
+.status-badge {
+    padding: 4px 10px;
+    border-radius: 20px;
+    font-size: 0.8rem;
+    font-weight: bold;
+}
+
+.status-active {
+    background: var(--admin-success);
+    color: white;
+}
+
+.status-inactive {
+    background: var(--admin-error);
+    color: white;
+}
+
+
+/* ==============================
+   FEEDBACK MESSAGES
+================================ */
+
+.message {
+    padding: 15px;
+    border-radius: 8px;
+    margin-bottom: 20px;
+    text-align: center;
+}
+
+.success {
+    background: rgba(16, 185, 129, 0.15);
+    border: 1px solid var(--admin-success);
+    color: var(--admin-success);
+}
+
+.error {
+    background: rgba(239, 68, 68, 0.15);
+    border: 1px solid var(--admin-error);
+    color: var(--admin-error);
+}
+
+
+/* ==============================
+   FORM GRID
+================================ */
+
+.admin-form-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 20px;
+}
+
+.form-actions {
+    grid-column: 1 / -1;
+    text-align: right;
+    margin-top: 10px;
+}
+
+
+/* ==============================
+   TABLE DETAILS
+================================ */
+
+.announcement-image {
+    width: 60px;
+    height: 60px;
+    object-fit: cover;
+    border-radius: 8px;
+    border: 1px solid var(--admin-border);
+}
+
+.actions-cell {
+    display: flex;
+    gap: 10px;
+}
+
+
+/* ==============================
+   ACTION BUTTONS
+================================ */
+
+.btn-status {
+    background: var(--admin-info);
+    color: white;
+    padding: 6px 12px;
+    border-radius: 6px;
+    border: none;
+    cursor: pointer;
+    font-size: 0.85rem;
+}
+
+.btn-delete {
+    background: var(--admin-danger);
+    color: white;
+    padding: 6px 12px;
+    border-radius: 6px;
+    border: none;
+    cursor: pointer;
+    font-size: 0.85rem;
+}
+
+
+/* ==============================
+   MODAL BACKDROP
+================================ */
+
+.admin-modal{
+    position:fixed;
+    inset:0;
+    background:rgba(0,0,0,0.65);
+    backdrop-filter:blur(6px);
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    opacity:0;
+    visibility:hidden;
+    transition:all .25s ease;
+    z-index:1000;
+}
+
+.admin-modal.open{
+    opacity:1;
+    visibility:visible;
+}
+
+
+/* ==============================
+   MODAL BOX
+================================ */
+
+.admin-modal-box{
+    background:var(--admin-background-alt);
+    border-radius:14px;
+    padding:30px;
+    width:700px;
+    max-height:90vh;
+    overflow-y:auto;
+    box-shadow:var(--admin-shadow);
+    animation:modalPop .25s ease;
+}
+
+@keyframes modalPop{
+    from{
+        transform:scale(.95);
+        opacity:0;
+    }
+    to{
+        transform:scale(1);
+        opacity:1;
+    }
+}
+
+
+/* ==============================
+   HEADER
+================================ */
+
+.admin-modal-box h2{
+    margin-bottom:20px;
+}
+
+
+/* ==============================
+   GRID
+================================ */
+
+.modal-grid{
+    display:grid;
+    grid-template-columns:1fr 1fr;
+    gap:16px;
+}
+
+.modal-grid .full{
+    grid-column:1 / -1;
+}
+
+
+/* ==============================
+   FORM FIELDS
+================================ */
+
+.form-group{
+    display:flex;
+    flex-direction:column;
+}
+
+.form-group label{
+    font-weight:600;
+    margin-bottom:6px;
+}
+
+.form-group input,
+.form-group select,
+.form-group textarea{
+    padding:8px 12px;
+    border-radius:6px;
+    border:1px solid var(--admin-border);
+    background:var(--admin-background);
+    color:var(--admin-foreground);
+    font-size:14px;
+    width:100%;
+    box-sizing:border-box;
+}
+
+.form-group textarea{
+    resize:vertical;
+}
+
+
+/* ==============================
+   IMAGE PREVIEW
+================================ */
+
+.edit-image-preview{
+    width:100%;
+    max-height:180px;
+    object-fit:cover;
+    border-radius:8px;
+    margin-bottom:10px;
+}
+
+
+/* ==============================
+   MODAL ACTIONS
+================================ */
+
+.modal-actions{
+    display:flex;
+    justify-content:flex-end;
+    gap:10px;
+    margin-top:20px;
+}
+
+.btn-primary{
+    background-color:var(--admin-primary);
+    color:#081c3a;
+    border:none;
+    padding:10px 20px;
+    border-radius:6px;
+    cursor:pointer;
+}
+
+.btn-delete{
+    background-color:var(--admin-danger);
+    color:white;
+    border:none;
+    padding:10px 20px;
+    border-radius:6px;
+    cursor:pointer;
+}
+/* =========================================
+   ADMIN DASHBOARD PAGE
+========================================= */
+
+.section-container{
+    margin-top:40px;
+}
+
+.section-heading{
+    font-size:1.3rem;
+    margin-bottom:20px;
+    color:var(--admin-gold);
+    font-weight:600;
+}
+
+/* =========================================
+   WELCOME CARD
+========================================= */
+
+.welcome-card-gradient{
+    background:linear-gradient(135deg,#0b2a57,#081c3a);
+    border-radius:18px;
+    padding:30px;
+    box-shadow:var(--admin-shadow);
+    border:1px solid var(--admin-glass-border);
+}
+
+.welcome-card-content{
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+}
+
+.user-name-title{
+    font-size:2rem;
+    font-weight:700;
+    margin:5px 0;
+}
+
+.user-role-badge{
+    background:var(--admin-secondary);
+    color:#081c3a;
+    padding:6px 14px;
+    border-radius:20px;
+    font-size:0.8rem;
+    display:inline-block;
+}
+
+/* =========================================
+   NOTIFICATION ICON
+========================================= */
+
+.notification-icon-wrapper{
+    position:relative;
+}
+
+.notification-icon-svg{
+    width:48px;
+    height:48px;
+    color:var(--admin-secondary);
+}
+
+.notification-count{
+    position:absolute;
+    top:-6px;
+    right:-6px;
+    background:var(--admin-danger);
+    color:white;
+    font-size:12px;
+    padding:4px 7px;
+    border-radius:50%;
+}
+
+/* =========================================
+   ADMIN STATS
+========================================= */
+
+.admin-stats-grid{
+    display:grid;
+    grid-template-columns:repeat(auto-fit,minmax(220px,1fr));
+    gap:20px;
+}
+
+.admin-stat-card{
+    background:var(--admin-card-bg);
+    backdrop-filter:blur(10px);
+    border-radius:14px;
+    padding:22px;
+    border:1px solid var(--admin-glass-border);
+    transition:var(--admin-transition);
+}
+
+.admin-stat-card:hover{
+    transform:translateY(-4px);
+    box-shadow:0 10px 25px rgba(0,0,0,0.4);
+}
+
+.admin-stat-label{
+    font-size:0.9rem;
+    color:var(--admin-muted);
+}
+
+.stat-value{
+    font-size:2rem;
+    font-weight:700;
+    margin:8px 0;
+}
+
+.text-red{
+    color:#ef4444;
+}
+
+.view-all-link{
+    font-size:0.85rem;
+    color:var(--admin-secondary);
+    text-decoration:none;
+}
+
+/* =========================================
+   QUICK ACTIONS
+========================================= */
+
+.quick-actions-grid{
+    display:grid;
+    grid-template-columns:repeat(auto-fit,minmax(160px,1fr));
+    gap:20px;
+}
+
+.quick-action-item{
+    background:var(--admin-card-bg);
+    border:1px solid var(--admin-glass-border);
+    border-radius:14px;
+    padding:20px;
+    text-align:center;
+    cursor:pointer;
+    transition:var(--admin-transition);
+}
+
+.quick-action-item:hover{
+    transform:translateY(-4px);
+    box-shadow:0 8px 20px rgba(0,0,0,0.35);
+}
+
+.action-icon{
+    font-size:30px;
+    margin-bottom:10px;
+}
+
+.action-text{
+    font-size:0.9rem;
+}
+
+.icon-blue{color:#3b82f6;}
+.icon-gold{color:var(--admin-secondary);}
+.icon-green{color:#10b981;}
+.icon-red{color:#ef4444;}
+
+/* =========================================
+   ADMIN PAGE HEADER
+========================================= */
+
+.dashboard-header{
+    margin-bottom:30px;
+}
+
+.dashboard-header h1{
+    font-size:2rem;
+    margin-bottom:5px;
+    color:var(--admin-gold);
+}
+
+.dashboard-header p{
+    color:var(--admin-muted);
+}
+
+
+/* =========================================
+   ADMIN SECTION
+========================================= */
+
+.admin-section{
+    margin-top:30px;
+}
+
+
+/* =========================================
+   DASHBOARD CARDS
+========================================= */
+
+.dashboard-cards{
+    display:grid;
+    gap:20px;
+}
+
+.card{
+    background:var(--admin-card-bg);
+    border:1px solid var(--admin-glass-border);
+    border-radius:14px;
+    padding:24px;
+    backdrop-filter:blur(10px);
+    transition:var(--admin-transition);
+}
+
+.card:hover{
+    transform:translateY(-4px);
+    box-shadow:0 10px 25px rgba(0,0,0,0.4);
+}
+
+.card h3{
+    font-size:1rem;
+    color:var(--admin-muted);
+}
+
+.card p{
+    font-size:2rem;
+    font-weight:700;
+}
+
+
+/* =========================================
+   ADMIN TABLE
+========================================= */
+
+.admin-table-card{
+    background:var(--admin-card-bg);
+    border:1px solid var(--admin-glass-border);
+    border-radius:14px;
+    overflow:hidden;
+    box-shadow:var(--admin-shadow);
+}
+
+.admin-table{
+    width:100%;
+    border-collapse:collapse;
+}
+
+.admin-table thead{
+    background:rgba(255,255,255,0.05);
+}
+
+.admin-table th{
+    padding:14px;
+    text-align:left;
+    font-size:0.9rem;
+    color:var(--admin-secondary);
+    border-bottom:1px solid var(--admin-border);
+}
+
+.admin-table td{
+    padding:14px;
+    border-bottom:1px solid var(--admin-border);
+    font-size:0.9rem;
+}
+
+.admin-table tr:hover{
+    background:rgba(255,255,255,0.04);
+}
+
+
+/* =========================================
+   BADGES
+========================================= */
+
+.badge{
+    padding:4px 10px;
+    font-size:0.75rem;
+    border-radius:20px;
+    font-weight:600;
+}
+
+.badge-warning{
+    background:#f59e0b;
+    color:#081c3a;
+}
+
+.badge-success{
+    background:#10b981;
+    color:white;
+}
+
+.badge-danger{
+    background:#ef4444;
+    color:white;
+}
+
+/* =========================================
+   ADMIN MESSAGES PAGE
+========================================= */
+
+.title{
+    font-size:2rem;
+    color:var(--admin-gold);
+    margin-bottom:5px;
+}
+
+.subtitle{
+    color:var(--admin-muted);
+    margin-bottom:25px;
+}
+
+
+/* =========================================
+   TAB SWITCHER
+========================================= */
+
+.tab-switcher{
+    display:flex;
+    gap:10px;
+    align-items:center;
+    margin-bottom:25px;
+}
+
+.tab-btn{
+    background:var(--admin-card-bg);
+    border:1px solid var(--admin-border);
+    color:var(--admin-foreground);
+    padding:10px 16px;
+    border-radius:8px;
+    cursor:pointer;
+    font-size:0.9rem;
+    transition:var(--admin-transition);
+}
+
+.tab-btn:hover{
+    background:rgba(255,255,255,0.08);
+}
+
+.tab-btn.active{
+    background:var(--admin-secondary);
+    color:#081c3a;
+    font-weight:600;
+}
+
+
+/* =========================================
+   MESSAGE LIST
+========================================= */
+
+.message-list{
+    display:flex;
+    flex-direction:column;
+    gap:16px;
+}
+
+
+/* =========================================
+   MESSAGE CARD
+========================================= */
+
+.card{
+    background:var(--admin-card-bg);
+    border:1px solid var(--admin-glass-border);
+    border-radius:14px;
+    padding:20px;
+    backdrop-filter:blur(10px);
+    transition:var(--admin-transition);
+}
+
+.card:hover{
+    transform:translateY(-3px);
+    box-shadow:0 10px 25px rgba(0,0,0,0.35);
+}
+
+
+/* unread highlight */
+
+.notification-unread{
+    border-left:4px solid var(--admin-secondary);
+}
+
+
+/* =========================================
+   MESSAGE TEXT
+========================================= */
+
+.msg-subject{
+    font-size:1.1rem;
+    margin:6px 0;
+    font-weight:600;
+}
+
+.msg-body{
+    font-size:0.9rem;
+    color:var(--admin-foreground);
+    margin-bottom:10px;
+}
+
+.text-muted{
+    color:var(--admin-muted);
+}
+
+.text-xs{
+    font-size:0.75rem;
+}
+
+.date{
+    margin-top:6px;
+}
+
+
+/* =========================================
+   MESSAGE ACTIONS
+========================================= */
+
+.message-actions{
+    display:flex;
+    gap:10px;
+    margin-top:10px;
+}
+
+
+/* =========================================
+   BUTTONS
+========================================= */
+
+.btn{
+    padding:8px 14px;
+    border-radius:6px;
+    border:none;
+    cursor:pointer;
+    font-size:0.85rem;
+}
+
+.btn-primary{
+    background:var(--admin-secondary);
+    color:#081c3a;
+}
+
+.btn-secondary{
+    background:var(--admin-background-alt);
+    color:white;
+}
+
+.btn-sm{
+    font-size:0.8rem;
+    padding:6px 10px;
+}
+
+
+/* =========================================
+   MODAL
+========================================= */
+
+.modal-overlay{
+    position:fixed;
+    inset:0;
+    background:rgba(0,0,0,0.65);
+    backdrop-filter:blur(6px);
+    display:none;
+    align-items:center;
+    justify-content:center;
+    z-index:1000;
+}
+
+.modal-overlay.active{
+    display:flex;
+}
+
+.modal{
+    background:var(--admin-background-alt);
+    padding:28px;
+    border-radius:12px;
+    width:420px;
+    box-shadow:var(--admin-shadow);
+    position:relative;
+}
+
+.modal h3{
+    margin-bottom:16px;
+}
+
+.modal label{
+    display:block;
+    font-size:0.85rem;
+    margin-top:10px;
+}
+
+.modal input,
+.modal textarea{
+    width:100%;
+    padding:10px;
+    margin-top:5px;
+    border-radius:6px;
+    border:1px solid var(--admin-border);
+    background:var(--admin-background);
+    color:white;
+}
+
+.modal textarea{
+    min-height:100px;
+    resize:vertical;
+}
+
+.modal-close{
+    position:absolute;
+    top:10px;
+    right:14px;
+    background:none;
+    border:none;
+    font-size:22px;
+    color:white;
+    cursor:pointer;
+}
+/* =========================================
+   ACTIONS CELL FOR DASHBOARD TABLE
+========================================= */
+.actions-cell {
+    display: flex;
+    gap: 10px;           /* space between buttons */
+    margin-top: 6px;     /* spacing below the badge */
+}
+
+.actions-cell form {
+    margin: 0;           /* remove default form margins */
+}
+
+/* Button tweaks for dashboard table */
+.btn-sm {
+    font-size: 0.8rem;
+    padding: 6px 12px;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: var(--admin-transition);
+}
+
+/* Approve button */
+.btn-primary {
+    background-color: var(--admin-secondary);
+    color: #081c3a;
+    border: none;
+}
+
+.btn-primary:hover {
+    background-color: var(--admin-secondary-dark);
+    box-shadow: 0 3px 10px var(--admin-gold-glow);
+    transform: translateY(-1px);
+}
+
+.btn-delete {
+    background-color: var(--admin-danger);
+    color: white;
+    border: none;
+}
+
+.btn-delete:hover {
+    background-color: #dc2626; 
+    transform: translateY(-1px);
+    box-shadow: 0 3px 10px rgba(239, 68, 68, 0.3);
+}

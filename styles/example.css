@@ -1,0 +1,89 @@
+:root {
+  /* Dark theme defaults */
+  --service-card-bg: rgba(255,255,255,0.05);
+  --service-card-bg-hover: rgba(255,255,255,0.1);
+  --service-card-border: rgba(255,255,255,0.1);
+  --service-card-border-hover: rgba(255,255,255,0.2);
+  --service-card-shadow: rgba(0,0,0,0.4);
+  --service-card-shadow-hover: rgba(0,0,0,0.6);
+  --service-card-text: #ffffff;
+
+  --service-icon-bg: rgba(255,255,255,0.1);
+  --service-icon-stroke: #ffffff;
+
+  --learn-btn-bg: linear-gradient(to right, #0056b3, #003366);
+  --learn-btn-bg-hover: linear-gradient(to left, #0056b3, #003366);
+  --learn-btn-border: rgba(255,255,255,0.2);
+  --learn-btn-text: #ffffff;
+  --learn-btn-shadow-hover: 0 10px 15px -3px rgba(0,0,0,0.1);
+
+  --close-btn-bg: #f1f3f9;
+  --close-btn-border: #e2e8f0;
+  --close-btn-text: #64748b;
+  --close-btn-bg-hover: #fee2e2;
+  --close-btn-text-hover: #991b1b;
+
+  --detail-panel-bg: #fdfdfd;
+  --detail-panel-shadow: 0 10px 15px -3px rgba(0,0,0,0.1), 0 4px 6px -2px rgba(0,0,0,0.05);
+  --detail-content-text: #000000;
+  --detail-content-heading: maroon;
+
+  --amenity-bg: #d9dffc;
+  --amenity-text: #06123d;
+
+  --book-btn-bg: linear-gradient(to right, rgba(6,18,61,0.98), rgba(120,22,22,0.80));
+  --book-btn-bg-hover: linear-gradient(to right, #0b1a40, #923a3a);
+  --book-btn-text: #ffffff;
+  --book-btn-shadow: 0 4px 6px rgba(0,0,0,0.15);
+  --book-btn-shadow-hover: 0 6px 12px rgba(0,0,0,0.2);
+
+  --space-info-text: #d1d5db;
+
+  --location-name: #e5e7eb;
+  --location-btn-bg: var(--brand-gold);
+  --location-btn-text: #000000;
+  --location-btn-hover: #d97706;
+}
+body.light-theme {
+  --service-card-bg: #ffffff;
+  --service-card-bg-hover: #f9fafb;
+  --service-card-border: rgba(0,0,0,0.1);
+  --service-card-border-hover: rgba(0,0,0,0.2);
+  --service-card-shadow: rgba(0,0,0,0.05);
+  --service-card-shadow-hover: rgba(0,0,0,0.1);
+  --service-card-text: #0a0e27;
+
+  --service-icon-bg: rgba(0,0,0,0.05);
+  --service-icon-stroke: #374151;
+
+  --learn-btn-bg: linear-gradient(to right, #2563eb, #1e3a8a);
+  --learn-btn-bg-hover: linear-gradient(to left, #2563eb, #1e3a8a);
+  --learn-btn-border: rgba(0,0,0,0.1);
+  --learn-btn-text: #ffffff;
+
+  --close-btn-bg: #f9fafb;
+  --close-btn-border: #d1d5db;
+  --close-btn-text: #374151;
+  --close-btn-bg-hover: #fee2e2;
+  --close-btn-text-hover: #991b1b;
+
+  --detail-panel-bg: #ffffff;
+  --detail-content-text: #0a0e27;
+  --detail-content-heading: #7f1d1d;
+
+  --amenity-bg: #e0e7ff;
+  --amenity-text: #1e3a8a;
+
+  --book-btn-bg: linear-gradient(to right, #f59e0b, #c2410c);
+  --book-btn-bg-hover: linear-gradient(to right, #d97706, #9a3412);
+  --book-btn-text: #ffffff;
+  --book-btn-shadow: 0 2px 4px rgba(0,0,0,0.1);
+  --book-btn-shadow-hover: 0 4px 8px rgba(0,0,0,0.15);
+
+  --space-info-text: #374151;
+
+  --location-name: #374151;
+  --location-btn-bg: #f59e0b;
+  --location-btn-text: #ffffff;
+  --location-btn-hover: #d97706;
+}

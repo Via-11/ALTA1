@@ -1,0 +1,406 @@
+SET FOREIGN_KEY_CHECKS=0;
+
+DROP TABLE IF EXISTS users;
+CREATE TABLE users (
+    user_id INT PRIMARY KEY AUTO_INCREMENT,
+    name VARCHAR(100) NOT NULL,
+    email VARCHAR(100) UNIQUE NOT NULL,
+    password VARCHAR(255) NOT NULL,
+    role ENUM('student', 'admin', 'guest') DEFAULT 'student',
+    company VARCHAR(100),
+    contact VARCHAR(20),
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    INDEX idx_email (email),
+    INDEX idx_role (role)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+ALTER TABLE users
+ADD address VARCHAR(255),
+ADD education VARCHAR(255),
+ADD experience TEXT,
+ADD startup_name VARCHAR(255),
+ADD industry VARCHAR(150),
+ADD startup_stage VARCHAR(100),
+ADD founded_year VARCHAR(50),
+ADD team_size VARCHAR(50),
+ADD startup_description TEXT,
+ADD target_market TEXT,
+ADD revenue_model VARCHAR(150),
+ADD funding_status VARCHAR(150);
+DROP TABLE IF EXISTS bookings;
+CREATE TABLE bookings (
+    id INT PRIMARY KEY AUTO_INCREMENT,
+    user_id INT NOT NULL,
+    service_name VARCHAR(255) NOT NULL,
+    startup_name VARCHAR(255) NOT NULL,
+    founder_name VARCHAR(255) NOT NULL,
+    email VARCHAR(255) NOT NULL,
+    phone VARCHAR(20) NOT NULL,
+    industry VARCHAR(100) NOT NULL,
+    stage VARCHAR(50) NOT NULL,
+    team_size VARCHAR(50),
+    description TEXT NOT NULL,
+    additional_comments TEXT,
+    pitch_deck_path VARCHAR(255),
+    appointment_date DATE,
+    appointment_time TIME,
+    location VARCHAR(255) DEFAULT 'TBD',
+    status ENUM('pending', 'approved', 'rejected', 'completed') DEFAULT 'pending',
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    FOREIGN KEY (user_id) REFERENCES users(user_id) ON DELETE CASCADE,
+    INDEX idx_user_id (user_id),
+    INDEX idx_status (status)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+ALTER TABLE bookings ADD COLUMN IF NOT EXISTS start_time TIME NULL COMMENT 'Session start time';
+ALTER TABLE bookings ADD COLUMN IF NOT EXISTS end_time TIME NULL COMMENT 'Session end time';
+
+UPDATE bookings SET start_time = '09:00:00', end_time = '11:00:00' WHERE start_time IS NULL;
+
+CREATE INDEX IF NOT EXISTS idx_appointment_date ON bookings(appointment_date);
+CREATE INDEX IF NOT EXISTS idx_status ON bookings(status);
+
+ALTER TABLE bookings ADD COLUMN IF NOT EXISTS appointment_start_time TIME NULL COMMENT 'Session start time';
+ALTER TABLE bookings ADD COLUMN IF NOT EXISTS appointment_end_time TIME NULL COMMENT 'Session end time';
+
+CREATE INDEX IF NOT EXISTS idx_bookings_user_created ON bookings(user_id, created_at);
+CREATE INDEX IF NOT EXISTS idx_bookings_status ON bookings(status);
+
+DROP TABLE IF EXISTS messages;
+CREATE TABLE messages (
+    id INT PRIMARY KEY AUTO_INCREMENT,
+    sender_id INT NOT NULL,
+    receiver_id INT NOT NULL,
+    sender_name VARCHAR(255),
+    subject VARCHAR(255) NOT NULL,
+    message TEXT NOT NULL,
+    status ENUM('unread', 'read') DEFAULT 'unread',
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (sender_id) REFERENCES users(user_id) ON DELETE CASCADE,
+    FOREIGN KEY (receiver_id) REFERENCES users(user_id) ON DELETE CASCADE,
+    INDEX idx_receiver_id (receiver_id),
+    INDEX idx_status (status)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+ALTER TABLE messages ADD conversation_id INT;
+
+DROP TABLE IF EXISTS notifications;
+CREATE TABLE notifications (
+    id INT PRIMARY KEY AUTO_INCREMENT,
+    user_id INT NOT NULL,
+    title VARCHAR(255) NOT NULL,
+    message TEXT NOT NULL,
+    type ENUM('application', 'booking', 'info') DEFAULT 'info',
+    status ENUM('unread', 'read') DEFAULT 'unread',
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (user_id) REFERENCES users(user_id) ON DELETE CASCADE,
+    INDEX idx_user_id (user_id)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+DROP TABLE IF EXISTS service_slots;
+CREATE TABLE service_slots (
+    id INT PRIMARY KEY AUTO_INCREMENT,
+    service_name VARCHAR(255) NOT NULL,
+    location VARCHAR(100) NOT NULL,
+    total_slots INT DEFAULT 20,
+    available_slots INT DEFAULT 20,
+    is_available TINYINT(1) DEFAULT 1,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    UNIQUE KEY unique_service_location (service_name, location),
+    INDEX idx_is_available (is_available)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+DROP TABLE IF EXISTS announcements;
+CREATE TABLE announcements (
+    id INT PRIMARY KEY AUTO_INCREMENT,
+    title VARCHAR(255) NOT NULL,
+    subtitle VARCHAR(255) NULL,
+    short_desc TEXT NULL,
+    highlights TEXT NULL,
+    message TEXT NOT NULL,
+    status ENUM('active', 'inactive') DEFAULT 'active',
+    type ENUM('latest','ongoing','upcoming') DEFAULT 'ongoing',
+    image VARCHAR(500) NULL,
+    event_date VARCHAR(100) NULL,
+    location VARCHAR(255) NULL,
+    button_text VARCHAR(100) DEFAULT 'Register Now',
+    badge VARCHAR(100) NULL,
+    badge_priority VARCHAR(100) NULL,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    INDEX idx_status (status)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+ALTER TABLE announcements ADD COLUMN reg_deadline VARCHAR(255) DEFAULT NULL AFTER event_date;
+INSERT INTO announcements (
+    title, 
+    subtitle, 
+    short_desc, 
+    highlights, 
+    message, 
+    status, 
+    type, 
+    image, 
+    event_date, 
+    location, 
+    badge, 
+    badge_priority, 
+    button_text
+) VALUES (
+    'INNOVATIONS WEEK 2026: "From Ideas to Impact"', 
+    'Research Outputs with Innovation Impact and Commercialization', 
+    'Aligned to Digital Transformation and ICT', 
+    '3-day event celebrating UPHSD''s 50th Anniversary Showcase digital research outputs Pitching competition and innovation exhibits Networking with industry partners Registration deadline: February 20, 2026', 
+    'INNOVATIONS WEEK 2026: "From Ideas to Impact" is a premier event focusing on research and commercialization.', 
+    'active', 
+    'latest', 
+    'uploads/announcements/ann_69a808ea7d05e6.72196763.jpg', 
+    'April 6-8, 2026', 
+    'UPHSD Las Piñas Campus', 
+    'Happening Soon', 
+    'Event', 
+    'Learn More & Register'
+);
+
+SET FOREIGN_KEY_CHECKS=1;
+
+INSERT INTO users (name, email, password, role, company, contact) VALUES
+('Admin User', 'admin@alta.edu.ph', 'admin123456', 'admin', 'ALTA iHub', '+63 912 345 6789')
+ON DUPLICATE KEY UPDATE user_id=user_id;
+
+CREATE TABLE faqs (
+    id INT PRIMARY KEY AUTO_INCREMENT,
+    question VARCHAR(500) NOT NULL,
+    answer TEXT NOT NULL,
+    category VARCHAR(100) NOT NULL DEFAULT 'General',
+    status ENUM('active', 'inactive') DEFAULT 'active',
+    display_order INT DEFAULT 0,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+);
+
+-- Sample data
+INSERT INTO faqs (question, answer, category, display_order) VALUES
+('What are your operating hours?', 'Our physical offices offer 24/7 access for members. Our support staff are available from 9 AM to 6 PM, Monday to Friday.', 'General', 1),
+('Do I need to sign a long-term contract?', 'No, we offer highly flexible terms ranging from daily passes to month-to-month leases.', 'Booking', 2),
+('Is internet speed reliable?', 'Yes, all our locations are equipped with enterprise-grade fiber optic internet with full redundancy.', 'Access', 3),
+('How do I apply for services?', 'Visit our Apply Now page, select your desired service, choose an available date from the calendar, and fill out the application form.', 'Services', 4),
+('What is the application review process?', 'After submission, our team reviews your application (5-7 business days), conducts interviews if shortlisted (2-3 days), and sends final decision within 2-3 weeks.', 'Services', 5),
+('Can I modify my application after submission?', 'Once submitted, applications cannot be modified. Please contact our support team to discuss options.', 'Services', 6),
+('What happens after I book a space?', 'You will receive a confirmation email with access details. Our team will contact you within 24 hours to finalize arrangements.', 'Booking', 7),
+('Are there any hidden charges?', 'No, all pricing is transparent. The amount quoted is the final amount with no hidden fees.', 'Booking', 8);
+
+
+ALTER TABLE users ADD COLUMN IF NOT EXISTS bio TEXT NULL COMMENT 'User biography';
+ALTER TABLE users ADD COLUMN IF NOT EXISTS contact VARCHAR(20) NULL COMMENT 'Contact number';
+ALTER TABLE users ADD COLUMN IF NOT EXISTS position VARCHAR(255) NULL COMMENT 'Position/Title';
+ALTER TABLE users ADD COLUMN IF NOT EXISTS github VARCHAR(500) NULL COMMENT 'GitHub profile URL';
+ALTER TABLE users ADD COLUMN IF NOT EXISTS linkedin VARCHAR(500) NULL COMMENT 'LinkedIn profile URL';
+ALTER TABLE users ADD COLUMN IF NOT EXISTS facebook VARCHAR(500) NULL COMMENT 'Facebook profile URL';
+ALTER TABLE users ADD COLUMN IF NOT EXISTS website VARCHAR(500) NULL COMMENT 'Personal/Company website URL';
+ALTER TABLE users ADD COLUMN IF NOT EXISTS skills TEXT NULL COMMENT 'User skills (comma-separated or descriptive)';
+
+CREATE INDEX IF NOT EXISTS idx_users_email ON users(email);
+CREATE INDEX IF NOT EXISTS idx_users_role ON users(role);
+
+DROP TABLE IF EXISTS documents;
+CREATE TABLE documents (
+    document_id INT AUTO_INCREMENT PRIMARY KEY,
+    user_id INT NOT NULL,
+    document_type VARCHAR(100) NOT NULL COMMENT 'Type: resume, id, certificate, business_plan, pitch_deck, other',
+    file_name VARCHAR(255) NOT NULL COMMENT 'Original file name',
+    file_path VARCHAR(500) NOT NULL COMMENT 'Path to stored file',
+    file_size INT NULL COMMENT 'File size in bytes',
+    file_type VARCHAR(100) NULL COMMENT 'MIME type',
+    uploaded_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP COMMENT 'Upload timestamp',
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT 'Last update timestamp',
+    
+    CONSTRAINT fk_documents_user 
+        FOREIGN KEY (user_id) 
+        REFERENCES users(user_id) 
+        ON DELETE CASCADE,
+    
+    INDEX idx_user_id (user_id),
+    INDEX idx_document_type (document_type),
+    INDEX idx_uploaded_at (uploaded_at)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci
+COMMENT='Stores user uploaded documents';
+
+
+DROP TABLE IF EXISTS profile_activity_log;
+CREATE TABLE profile_activity_log (
+    log_id INT AUTO_INCREMENT PRIMARY KEY,
+    user_id INT NOT NULL,
+    action VARCHAR(100) NOT NULL COMMENT 'update_personal, update_startup, upload_document, update_settings',
+    field_name VARCHAR(100) NULL COMMENT 'Field that was changed',
+    old_value TEXT NULL COMMENT 'Previous value',
+    new_value TEXT NULL COMMENT 'New value',
+    ip_address VARCHAR(45) NULL COMMENT 'User IP address',
+    action_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP COMMENT 'When action occurred',
+    
+    CONSTRAINT fk_activity_user 
+        FOREIGN KEY (user_id) 
+        REFERENCES users(user_id) 
+        ON DELETE CASCADE,
+    
+    INDEX idx_user_id (user_id),
+    INDEX idx_action (action),
+    INDEX idx_action_at (action_at)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci
+COMMENT='Logs profile modifications for audit purposes';
+
+-- Sample user with profile data
+INSERT INTO users (name, email, password, role, company, contact, bio, position, github, linkedin, facebook, website, skills)
+VALUES (
+    'Juan Dela Cruz',
+    'juan@example.com',
+    'password123',
+    'student',
+    'Tech Ventures Inc',
+    '+63 912 345 6789',
+    'Passionate entrepreneur and tech enthusiast focused on building innovative solutions.',
+    'Founder & CEO',
+    'https://github.com/juandelacruz',
+    'https://linkedin.com/in/juandelacruz',
+    'https://facebook.com/juandelacruz',
+    'https://juandelacruz.com',
+    'Web Development, AI/ML, Product Management'
+)
+ON DUPLICATE KEY UPDATE
+    bio = VALUES(bio),
+    position = VALUES(position),
+    github = VALUES(github),
+    linkedin = VALUES(linkedin),
+    facebook = VALUES(facebook),
+    website = VALUES(website),
+    skills = VALUES(skills);
+
+DROP VIEW IF EXISTS user_profile_summary;
+CREATE VIEW user_profile_summary AS
+SELECT 
+    u.user_id,
+    u.name,
+    u.email,
+    u.role,
+    u.company,
+    u.contact,
+    u.bio,
+    u.position,
+    u.skills,
+    u.github,
+    u.linkedin,
+    u.facebook,
+    u.website,
+    COUNT(d.document_id) AS total_documents,
+    u.created_at,
+    u.updated_at
+FROM users u
+LEFT JOIN documents d ON u.user_id = d.user_id
+GROUP BY u.user_id;
+
+-- View to get active document uploads
+DROP VIEW IF EXISTS recent_documents;
+CREATE VIEW recent_documents AS
+SELECT 
+    d.*,
+    u.name AS user_name,
+    u.email AS user_email
+FROM documents d
+JOIN users u ON d.user_id = u.user_id
+ORDER BY d.uploaded_at DESC;
+
+DROP PROCEDURE IF EXISTS GetUserProfile;
+DELIMITER $$
+
+CREATE PROCEDURE GetUserProfile(IN p_user_id INT)
+BEGIN
+    SELECT * FROM user_profile_summary WHERE user_id = p_user_id;
+END$$
+
+DELIMITER ;
+
+-- Procedure to get user documents
+DROP PROCEDURE IF EXISTS GetUserDocuments;
+DELIMITER $$
+
+CREATE PROCEDURE GetUserDocuments(IN p_user_id INT)
+BEGIN
+    SELECT * FROM documents 
+    WHERE user_id = p_user_id 
+    ORDER BY uploaded_at DESC;
+END$$
+
+DELIMITER ;
+
+DROP PROCEDURE IF EXISTS LogProfileActivity;
+DELIMITER $$
+
+CREATE PROCEDURE LogProfileActivity(
+    IN p_user_id INT,
+    IN p_action VARCHAR(100),
+    IN p_field_name VARCHAR(100),
+    IN p_old_value TEXT,
+    IN p_new_value TEXT,
+    IN p_ip_address VARCHAR(45)
+)
+BEGIN
+    INSERT INTO profile_activity_log 
+    (user_id, action, field_name, old_value, new_value, ip_address)
+    VALUES 
+    (p_user_id, p_action, p_field_name, p_old_value, p_new_value, p_ip_address);
+END$$
+
+DELIMITER ;
+
+ALTER TABLE users 
+ADD CONSTRAINT chk_github_url 
+CHECK (github IS NULL OR github LIKE 'http%');
+
+ALTER TABLE users 
+ADD CONSTRAINT chk_linkedin_url 
+CHECK (linkedin IS NULL OR linkedin LIKE 'http%');
+
+ALTER TABLE users 
+ADD CONSTRAINT chk_facebook_url 
+CHECK (facebook IS NULL OR facebook LIKE 'http%');
+
+ALTER TABLE users 
+ADD CONSTRAINT chk_website_url 
+CHECK (website IS NULL OR website LIKE 'http%');
+
+
+-- FOR LATER ITO
+-- ============================================
+-- PERMISSIONS (For Multi-User Environments)
+-- ============================================
+
+-- Create a read-only user for profile viewing
+-- CREATE USER 'profile_reader'@'localhost' IDENTIFIED BY 'secure_password';
+-- GRANT SELECT ON updh2.users TO 'profile_reader'@'localhost';
+-- GRANT SELECT ON updh2.documents TO 'profile_reader'@'localhost';
+-- GRANT SELECT ON updh2.user_profile_summary TO 'profile_reader'@'localhost';
+
+-- Create a profile editor user
+-- CREATE USER 'profile_editor'@'localhost' IDENTIFIED BY 'secure_password';
+-- GRANT SELECT, UPDATE ON updh2.users TO 'profile_editor'@'localhost';
+-- GRANT SELECT, INSERT, UPDATE, DELETE ON updh2.documents TO 'profile_editor'@'localhost';
+-- GRANT SELECT, INSERT ON updh2.profile_activity_log TO 'profile_editor'@'localhost';
+
+-- ============================================
+-- BACKUP SCRIPT
+-- ============================================
+
+-- Export tables:
+-- mysqldump -u root -p updh2 users documents profile_activity_log > profile_backup.sql
+
+-- Restore from backup:
+-- mysql -u root -p updh2 < profile_backup.sql
+
+ALTER TABLE messages ADD COLUMN IF NOT EXISTS parent_message_id INT NULL COMMENT 'Reference to original message for replies';
+
+CREATE INDEX IF NOT EXISTS idx_messages_receiver ON messages(receiver_id);
+CREATE INDEX IF NOT EXISTS idx_messages_status ON messages(status);
+CREATE INDEX IF NOT EXISTS idx_messages_parent ON messages(parent_message_id);
+
+ALTER TABLE messages ADD CONSTRAINT fk_parent_message 
+FOREIGN KEY (parent_message_id) REFERENCES messages(id) ON DELETE CASCADE;
+
